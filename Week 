@@ -1,0 +1,290 @@
+{
+    "nbformat_minor": 1, 
+    "cells": [
+        {
+            "execution_count": 1, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": "import numpy as np\nimport pandas as pd\nimport json"
+        }, 
+        {
+            "execution_count": 2, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "output_type": "stream", 
+                    "name": "stdout", 
+                    "text": "Fetching package metadata ...........\nSolving package specifications: .\n\nPackage plan for installation in environment /opt/conda/envs/DSX-Python35:\n\nThe following packages will be UPDATED:\n\n    beautifulsoup4: 4.6.0-py35h442a8c9_1 --> 4.6.3-py35_0\n\nbeautifulsoup4 100% |################################| Time: 0:00:00  27.30 MB/s\nFetching package metadata ...........\nSolving package specifications: .\n\nPackage plan for installation in environment /opt/conda/envs/DSX-Python35:\n\nThe following packages will be UPDATED:\n\n    libgcc-ng: 7.2.0-h7cc24e2_2     --> 8.2.0-hdf63c60_1    \n    libxml2:   2.9.4-h6b072ca_5     --> 2.9.8-hf84eae3_0    \n    libxslt:   1.1.29-hcf9102b_5    --> 1.1.33-h7d1a2b0_0   \n    lxml:      4.1.0-py35ha401a81_0 --> 4.2.5-py35hefd8a0e_0\n\nlibgcc-ng-8.2. 100% |################################| Time: 0:00:00  73.13 MB/s\nlibxml2-2.9.8- 100% |################################| Time: 0:00:00  24.08 MB/s\nlibxslt-1.1.33 100% |################################| Time: 0:00:00  32.16 MB/s\nlxml-4.2.5-py3 100% |################################| Time: 0:00:00  54.97 MB/s\nFetching package metadata ...........\nSolving package specifications: .\n\nPackage plan for installation in environment /opt/conda/envs/DSX-Python35:\n\nThe following packages will be UPDATED:\n\n    html5lib: 0.999999999-py35h0543385_0 --> 1.0.1-py35_0\n\nhtml5lib-1.0.1 100% |################################| Time: 0:00:00  37.78 MB/s\nFetching package metadata ...........\nSolving package specifications: .\n\nPackage plan for installation in environment /opt/conda/envs/DSX-Python35:\n\nThe following packages will be UPDATED:\n\n    requests: 2.18.4-py35hb9e6ad1_1 --> 2.19.1-py35_0\n\nrequests-2.19. 100% |################################| Time: 0:00:00  29.11 MB/s\n"
+                }
+            ], 
+            "source": "!conda install beautifulsoup4\n!conda install lxml\n!conda install html5lib\n!conda install requests"
+        }, 
+        {
+            "execution_count": 3, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": "from bs4 import BeautifulSoup\nimport requests\nwikiweb_link=\"https://en.wikipedia.org/wiki/List_of_postal_codes_of_Canada:_M\"\nsource=requests.get(wikiweb_link).text"
+        }, 
+        {
+            "execution_count": 4, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": "soup=BeautifulSoup(source,'lxml')"
+        }, 
+        {
+            "execution_count": 5, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": "citytable=soup.find('table',class_=\"wikitable sortable\")\ndfcity = pd.read_html(str(citytable), header=0)[0]"
+        }, 
+        {
+            "execution_count": 6, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": "dfcity['Postcode'] = dfcity['Postcode'].astype(str)\ndfcity['Borough'] = dfcity['Borough'].astype(str)\ndfcity['Neighbourhood'] = dfcity['Neighbourhood'].astype(str)"
+        }, 
+        {
+            "execution_count": 8, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 8, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postcode</th>\n      <th>Borough</th>\n      <th>Neighbourhood</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>M1A</td>\n      <td>Not assigned</td>\n      <td>Not assigned</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>M2A</td>\n      <td>Not assigned</td>\n      <td>Not assigned</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>M3A</td>\n      <td>North York</td>\n      <td>Parkwoods</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>M4A</td>\n      <td>North York</td>\n      <td>Victoria Village</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>M5A</td>\n      <td>Downtown Toronto</td>\n      <td>Harbourfront</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "  Postcode           Borough     Neighbourhood\n0      M1A      Not assigned      Not assigned\n1      M2A      Not assigned      Not assigned\n2      M3A        North York         Parkwoods\n3      M4A        North York  Victoria Village\n4      M5A  Downtown Toronto      Harbourfront"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "dfcity.head()"
+        }, 
+        {
+            "execution_count": 9, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 9, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postcode</th>\n      <th>Borough</th>\n      <th>Neighbourhood</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2</th>\n      <td>M3A</td>\n      <td>North York</td>\n      <td>Parkwoods</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>M4A</td>\n      <td>North York</td>\n      <td>Victoria Village</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>M5A</td>\n      <td>Downtown Toronto</td>\n      <td>Harbourfront</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>M5A</td>\n      <td>Downtown Toronto</td>\n      <td>Regent Park</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>M6A</td>\n      <td>North York</td>\n      <td>Lawrence Heights</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "  Postcode           Borough     Neighbourhood\n2      M3A        North York         Parkwoods\n3      M4A        North York  Victoria Village\n4      M5A  Downtown Toronto      Harbourfront\n5      M5A  Downtown Toronto       Regent Park\n6      M6A        North York  Lawrence Heights"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "dfcity=dfcity.drop(dfcity[dfcity.Borough=='Not assigned'].index)\ndfcity.head()"
+        }, 
+        {
+            "execution_count": 10, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 10, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postcode</th>\n      <th>Borough</th>\n      <th>Neighbourhood</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>M1B</td>\n      <td>Scarborough</td>\n      <td>Rouge,Malvern</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>M1C</td>\n      <td>Scarborough</td>\n      <td>Highland Creek,Rouge Hill,Port Union</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>M1E</td>\n      <td>Scarborough</td>\n      <td>Guildwood,Morningside,West Hill</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>M1G</td>\n      <td>Scarborough</td>\n      <td>Woburn</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>M1H</td>\n      <td>Scarborough</td>\n      <td>Cedarbrae</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "  Postcode      Borough                         Neighbourhood\n0      M1B  Scarborough                         Rouge,Malvern\n1      M1C  Scarborough  Highland Creek,Rouge Hill,Port Union\n2      M1E  Scarborough       Guildwood,Morningside,West Hill\n3      M1G  Scarborough                                Woburn\n4      M1H  Scarborough                             Cedarbrae"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "dfcity=dfcity.groupby(['Postcode',\"Borough\"])[\"Neighbourhood\"].apply(lambda x: ','.join(x)).reset_index()\ndfcity.head()"
+        }, 
+        {
+            "execution_count": 11, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 11, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postcode</th>\n      <th>Borough</th>\n      <th>Neighbourhood</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>85</th>\n      <td>M7A</td>\n      <td>Queen's Park</td>\n      <td>Queen's Park</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "   Postcode       Borough Neighbourhood\n85      M7A  Queen's Park  Queen's Park"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "dfcity['Neighbourhood'].loc[dfcity['Neighbourhood'].str.contains('Not assigned')]=dfcity['Borough']\n\nwiwi=dfcity[dfcity['Postcode'].str.contains('M7A')]\nwiwi"
+        }, 
+        {
+            "execution_count": 12, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 12, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/plain": "(103, 3)"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "dfcity.shape"
+        }, 
+        {
+            "execution_count": 13, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "output_type": "stream", 
+                    "name": "stdout", 
+                    "text": "Fetching package metadata .............\nSolving package specifications: .\n\nPackage plan for installation in environment /opt/conda/envs/DSX-Python35:\n\nThe following NEW packages will be INSTALLED:\n\n    geographiclib: 1.49-py_0   conda-forge\n    geopy:         1.19.0-py_0 conda-forge\n\ngeographiclib- 100% |################################| Time: 0:00:00  22.18 MB/s\ngeopy-1.19.0-p 100% |################################| Time: 0:00:00  32.66 MB/s\n"
+                }
+            ], 
+            "source": "!conda install -c conda-forge geopy --yes \nfrom geopy.geocoders import Nominatim"
+        }, 
+        {
+            "execution_count": 15, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": "column_names=['Postcode', 'Borough', 'Neighborhood', 'Latitude', 'Longitude']\nneighborhoods = pd.DataFrame(columns=column_names)"
+        }, 
+        {
+            "execution_count": 17, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 17, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postcode</th>\n      <th>Borough</th>\n      <th>Neighborhood</th>\n      <th>Latitude</th>\n      <th>Longitude</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>M1B</td>\n      <td>Scarborough</td>\n      <td>Rouge,Malvern</td>\n      <td>43.773077</td>\n      <td>-79.257774</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>M1C</td>\n      <td>Scarborough</td>\n      <td>Highland Creek,Rouge Hill,Port Union</td>\n      <td>43.773077</td>\n      <td>-79.257774</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>M1E</td>\n      <td>Scarborough</td>\n      <td>Guildwood,Morningside,West Hill</td>\n      <td>0.000000</td>\n      <td>0.000000</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>M1G</td>\n      <td>Scarborough</td>\n      <td>Woburn</td>\n      <td>0.000000</td>\n      <td>0.000000</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>M1H</td>\n      <td>Scarborough</td>\n      <td>Cedarbrae</td>\n      <td>0.000000</td>\n      <td>0.000000</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "  Postcode      Borough                          Neighborhood   Latitude  \\\n0      M1B  Scarborough                         Rouge,Malvern  43.773077   \n1      M1C  Scarborough  Highland Creek,Rouge Hill,Port Union  43.773077   \n2      M1E  Scarborough       Guildwood,Morningside,West Hill   0.000000   \n3      M1G  Scarborough                                Woburn   0.000000   \n4      M1H  Scarborough                             Cedarbrae   0.000000   \n\n   Longitude  \n0 -79.257774  \n1 -79.257774  \n2   0.000000  \n3   0.000000  \n4   0.000000  "
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "for data in dfcity.itertuples():\n    address = ' {0}, {1}, Ontario'.format(data[1],data[2])\n    geolocator = Nominatim(user_agent=\"foursquare_agent\")\n    location = geolocator.geocode(address)\n    \n    try:\n        latitude = location.latitude\n        longitude = location.longitude\n    except: \n        latitude =0\n        longitude = 0\n\n        \n    neighborhoods = neighborhoods.append({'Postcode': data[1],\n                                        'Borough': data[2],\n                                        'Neighborhood': data[3],\n                                        'Latitude': latitude,\n                                        'Longitude': longitude}, ignore_index=True)\n    \nneighborhoods.head()"
+        }, 
+        {
+            "execution_count": 18, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 18, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/plain": "0.000000     170\n42.858062      6\n43.773077      4\n43.756199      2\n43.662173      2\n43.816435      2\n43.649248      2\n43.644903      2\n43.654374      2\n43.659980      2\n43.675566      2\n43.732822      2\n43.763531      2\n43.718905      1\nName: Latitude, dtype: int64"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "neighborhoods['Latitude'].value_counts()"
+        }, 
+        {
+            "execution_count": 19, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "output_type": "stream", 
+                    "name": "stdout", 
+                    "text": "--2019-04-16 13:07:19--  http://cocl.us/Geospatial_data/Geospatial_Coordinates.csv\nResolving cocl.us (cocl.us)... 169.48.113.201\nConnecting to cocl.us (cocl.us)|169.48.113.201|:80... connected.\nHTTP request sent, awaiting response... 301 Moved Permanently\nLocation: https://cocl.us/Geospatial_data/Geospatial_Coordinates.csv [following]\n--2019-04-16 13:07:19--  https://cocl.us/Geospatial_data/Geospatial_Coordinates.csv\nConnecting to cocl.us (cocl.us)|169.48.113.201|:443... connected.\nHTTP request sent, awaiting response... 301 Moved Permanently\nLocation: https://ibm.box.com/shared/static/9afzr83pps4pwf2smjjcf1y5mvgb18rr.csv [following]\n--2019-04-16 13:07:20--  https://ibm.box.com/shared/static/9afzr83pps4pwf2smjjcf1y5mvgb18rr.csv\nResolving ibm.box.com (ibm.box.com)... 107.152.25.197, 107.152.24.197\nConnecting to ibm.box.com (ibm.box.com)|107.152.25.197|:443... connected.\nHTTP request sent, awaiting response... 301 Moved Permanently\nLocation: /public/static/9afzr83pps4pwf2smjjcf1y5mvgb18rr.csv [following]\n--2019-04-16 13:07:20--  https://ibm.box.com/public/static/9afzr83pps4pwf2smjjcf1y5mvgb18rr.csv\nReusing existing connection to ibm.box.com:443.\nHTTP request sent, awaiting response... 301 Moved Permanently\nLocation: https://ibm.ent.box.com/public/static/9afzr83pps4pwf2smjjcf1y5mvgb18rr.csv [following]\n--2019-04-16 13:07:20--  https://ibm.ent.box.com/public/static/9afzr83pps4pwf2smjjcf1y5mvgb18rr.csv\nResolving ibm.ent.box.com (ibm.ent.box.com)... 107.152.26.211\nConnecting to ibm.ent.box.com (ibm.ent.box.com)|107.152.26.211|:443... connected.\nHTTP request sent, awaiting response... 302 Found\nLocation: https://public.boxcloud.com/d/1/b1!QYSZHJetFk9_lsP25maaXWuvWg9vl7WYNNqxoib-xR4-vGjkR3y0ohK_rd7ncL2A38rJ4Vu9iFlDKWXFZ3lgUtSx2uRbshurU46SPB0ESIFWSToX18q9y6ytTR2CIbqbaDrfpG_3gNymxAIlB3ZMCwxrE8_6KAr9uXC_PKpGHEQPdUaoyC6LBnOWFFeEv33EsWj5MHJ2Tfu15lAKMD4sd0qO7h4JHsKEDQab5WqszPY2XhznaKMbPGz5SRp2Kcs_eUH08KdNQKz0DXSzKwQXbIncyMuhCbpGjqfPUEpPm38yaHZCJsCbsmma2yRKDlMdDpkSObIhpZ5yzG7GZ_DQGU9-RoxxS3tXenBt14qX4vDuzbo19k7MxFJwpyQ8RDgY2ylh-xNNsfTmO2LgAH1ZFqPIeQ3uDGYbVwYGnanoBbuoVE3QFzXn7xs5EEq8Y7A1c6ud5Afxpiw9wcHGeZtOUulolyJAPpy1-9lfidNfujn3yLmMDuO1H-KuBkySqZ-9Nuzw6WpiJuqGZJ974FM-eo3sYDOtkoUptIhkMCAB2IXWx-K8zXmrKzeglxc9p-nuirwchpyEGzbkA1xCEyvxP8lSQ8_yxMFWxVChtIvpfapyFEb8fZLEP2UVsK5mhM9DIPTCAVjqiS4E_4sI46gQ6nSo1um84fS4QRia1RSAp1YGEZqUF2-9c3SQdaMHMwEY0TAhQRHowIlQJzUvBTOR-BILrSnurEXEIQ_PBTv7oZCexrw_xacum3i0M24Zg_gtcbwi3ryyuxSMFBLxhnKBQFaDQ3tzHDDcONnu7zLjqObT4pivHoT8w-lqGaoZ8Oa8b5dKjBz3xJ24E3FgnZ3kDCAeMCqkBl2TW6U6j2HDOBvYrqSITSA8_luO99--rD2--JMcsofWOGm598nUscz-3lda34WUo-xkZvJJXvCz7mXJkkKR99NkQhatmgftgVaLjhnESJrTnBIH6wU6avNHhQb2SXQk7pHsmC-ix5Lr7RN3Cko2KiHGnNaZkOO_PJNGyPgYnAxxDbGaHwmdGk_L7KVZYI-uZxNXsy1iA_SUrBKx6lbzZcH5c8lg4Q7sEkMqnSE5bbZ652TzOD9yuA4p5wxKDP4RHm9ka_H2_Yo31GWNDhcFnpbS50zIc19Ig_xpBI-ITmQ8SInE3UeRZFp2miGxOMSIBQ1rDtyTU28nUgiApgKT3HEF_hPMBjofShSPciZWYMkGk2ctzAkFOO4J-jWnJPkiLyg1ic0QtvDCIKsTxGqRhE3FZjxGimkg1h0K0qzzY82cH9Ecq9jBPwd_ADCAGdqg2xwmDXqu0zsVpvB-rq3V2sCuRsrQT0CV56uV4FoOr8cHESG2oHQgk3FzY2W66st6OL1KSy0L1Ya9WCMf10X32a1D6A../download [following]\n--2019-04-16 13:07:21--  https://public.boxcloud.com/d/1/b1!QYSZHJetFk9_lsP25maaXWuvWg9vl7WYNNqxoib-xR4-vGjkR3y0ohK_rd7ncL2A38rJ4Vu9iFlDKWXFZ3lgUtSx2uRbshurU46SPB0ESIFWSToX18q9y6ytTR2CIbqbaDrfpG_3gNymxAIlB3ZMCwxrE8_6KAr9uXC_PKpGHEQPdUaoyC6LBnOWFFeEv33EsWj5MHJ2Tfu15lAKMD4sd0qO7h4JHsKEDQab5WqszPY2XhznaKMbPGz5SRp2Kcs_eUH08KdNQKz0DXSzKwQXbIncyMuhCbpGjqfPUEpPm38yaHZCJsCbsmma2yRKDlMdDpkSObIhpZ5yzG7GZ_DQGU9-RoxxS3tXenBt14qX4vDuzbo19k7MxFJwpyQ8RDgY2ylh-xNNsfTmO2LgAH1ZFqPIeQ3uDGYbVwYGnanoBbuoVE3QFzXn7xs5EEq8Y7A1c6ud5Afxpiw9wcHGeZtOUulolyJAPpy1-9lfidNfujn3yLmMDuO1H-KuBkySqZ-9Nuzw6WpiJuqGZJ974FM-eo3sYDOtkoUptIhkMCAB2IXWx-K8zXmrKzeglxc9p-nuirwchpyEGzbkA1xCEyvxP8lSQ8_yxMFWxVChtIvpfapyFEb8fZLEP2UVsK5mhM9DIPTCAVjqiS4E_4sI46gQ6nSo1um84fS4QRia1RSAp1YGEZqUF2-9c3SQdaMHMwEY0TAhQRHowIlQJzUvBTOR-BILrSnurEXEIQ_PBTv7oZCexrw_xacum3i0M24Zg_gtcbwi3ryyuxSMFBLxhnKBQFaDQ3tzHDDcONnu7zLjqObT4pivHoT8w-lqGaoZ8Oa8b5dKjBz3xJ24E3FgnZ3kDCAeMCqkBl2TW6U6j2HDOBvYrqSITSA8_luO99--rD2--JMcsofWOGm598nUscz-3lda34WUo-xkZvJJXvCz7mXJkkKR99NkQhatmgftgVaLjhnESJrTnBIH6wU6avNHhQb2SXQk7pHsmC-ix5Lr7RN3Cko2KiHGnNaZkOO_PJNGyPgYnAxxDbGaHwmdGk_L7KVZYI-uZxNXsy1iA_SUrBKx6lbzZcH5c8lg4Q7sEkMqnSE5bbZ652TzOD9yuA4p5wxKDP4RHm9ka_H2_Yo31GWNDhcFnpbS50zIc19Ig_xpBI-ITmQ8SInE3UeRZFp2miGxOMSIBQ1rDtyTU28nUgiApgKT3HEF_hPMBjofShSPciZWYMkGk2ctzAkFOO4J-jWnJPkiLyg1ic0QtvDCIKsTxGqRhE3FZjxGimkg1h0K0qzzY82cH9Ecq9jBPwd_ADCAGdqg2xwmDXqu0zsVpvB-rq3V2sCuRsrQT0CV56uV4FoOr8cHESG2oHQgk3FzY2W66st6OL1KSy0L1Ya9WCMf10X32a1D6A../download\nResolving public.boxcloud.com (public.boxcloud.com)... 107.152.24.200, 107.152.25.200\nConnecting to public.boxcloud.com (public.boxcloud.com)|107.152.24.200|:443... connected.\nHTTP request sent, awaiting response... 200 OK\nLength: 2891 (2.8K) [text/csv]\nSaving to: \u2018Geospatial_Coordinates.csv\u2019\n\n100%[======================================>] 2,891       --.-K/s   in 0s      \n\n2019-04-16 13:07:21 (139 MB/s) - \u2018Geospatial_Coordinates.csv\u2019 saved [2891/2891]\n\n"
+                }
+            ], 
+            "source": "!wget -O Geospatial_Coordinates.csv http://cocl.us/Geospatial_data/Geospatial_Coordinates.csv\n"
+        }, 
+        {
+            "execution_count": 20, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 20, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postal Code</th>\n      <th>Latitude</th>\n      <th>Longitude</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>M1B</td>\n      <td>43.806686</td>\n      <td>-79.194353</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>M1C</td>\n      <td>43.784535</td>\n      <td>-79.160497</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>M1E</td>\n      <td>43.763573</td>\n      <td>-79.188711</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>M1G</td>\n      <td>43.770992</td>\n      <td>-79.216917</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>M1H</td>\n      <td>43.773136</td>\n      <td>-79.239476</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "  Postal Code   Latitude  Longitude\n0         M1B  43.806686 -79.194353\n1         M1C  43.784535 -79.160497\n2         M1E  43.763573 -79.188711\n3         M1G  43.770992 -79.216917\n4         M1H  43.773136 -79.239476"
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "coorsourcedp = pd.read_csv(\"Geospatial_Coordinates.csv\")\ncoorsourcedp.head()"
+        }, 
+        {
+            "execution_count": 21, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "output_type": "stream", 
+                    "name": "stdout", 
+                    "text": "43.7845351\n"
+                }
+            ], 
+            "source": "dummydf=coorsourcedp[coorsourcedp['Postal Code']=='M1C']   \ntlat=dummydf['Latitude'].values[0]\ntlong=dummydf['Longitude'].values[0]\nprint(tlat)"
+        }, 
+        {
+            "execution_count": 22, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "output_type": "stream", 
+                    "name": "stdout", 
+                    "text": "Postcode         object\nBorough          object\nNeighborhood     object\nLatitude        float64\nLongitude       float64\ndtype: object\n"
+                }
+            ], 
+            "source": "column_names=['Postcode', 'Borough', 'Neighborhood', 'Latitude', 'Longitude']\n\nneighborhoods = pd.DataFrame(columns=column_names)\n\nneighborhoods['Latitude'] = neighborhoods['Latitude'].astype(np.float64)\nneighborhoods['Longitude'] = neighborhoods['Longitude'].astype(np.float64)\n\ntlat=0.0\ntlong=0.0\n\nfor data in dfcity.itertuples():\n    dummydf=coorsourcedp[coorsourcedp['Postal Code']==data[1]]   \n    tlat=dummydf['Latitude'].values[0]\n    tlong=dummydf['Longitude'].values[0]\n    \n    neighborhoods = neighborhoods.append({'Postcode': data[1],\n                                        'Borough': data[2],\n                                        'Neighborhood': data[3],\n                                        'Latitude': tlat,\n                                        'Longitude': tlong}, ignore_index=True)\n\nprint(neighborhoods.dtypes)"
+        }, 
+        {
+            "execution_count": 23, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [
+                {
+                    "execution_count": 23, 
+                    "metadata": {}, 
+                    "data": {
+                        "text/html": "<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Postcode</th>\n      <th>Borough</th>\n      <th>Neighborhood</th>\n      <th>Latitude</th>\n      <th>Longitude</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>M1B</td>\n      <td>Scarborough</td>\n      <td>Rouge,Malvern</td>\n      <td>43.806686</td>\n      <td>-79.194353</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>M1C</td>\n      <td>Scarborough</td>\n      <td>Highland Creek,Rouge Hill,Port Union</td>\n      <td>43.784535</td>\n      <td>-79.160497</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>M1E</td>\n      <td>Scarborough</td>\n      <td>Guildwood,Morningside,West Hill</td>\n      <td>43.763573</td>\n      <td>-79.188711</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>M1G</td>\n      <td>Scarborough</td>\n      <td>Woburn</td>\n      <td>43.770992</td>\n      <td>-79.216917</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>M1H</td>\n      <td>Scarborough</td>\n      <td>Cedarbrae</td>\n      <td>43.773136</td>\n      <td>-79.239476</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>M1J</td>\n      <td>Scarborough</td>\n      <td>Scarborough Village</td>\n      <td>43.744734</td>\n      <td>-79.239476</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>M1K</td>\n      <td>Scarborough</td>\n      <td>East Birchmount Park,Ionview,Kennedy Park</td>\n      <td>43.727929</td>\n      <td>-79.262029</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>M1L</td>\n      <td>Scarborough</td>\n      <td>Clairlea,Golden Mile,Oakridge</td>\n      <td>43.711112</td>\n      <td>-79.284577</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td>M1M</td>\n      <td>Scarborough</td>\n      <td>Cliffcrest,Cliffside,Scarborough Village West</td>\n      <td>43.716316</td>\n      <td>-79.239476</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>M1N</td>\n      <td>Scarborough</td>\n      <td>Birch Cliff,Cliffside West</td>\n      <td>43.692657</td>\n      <td>-79.264848</td>\n    </tr>\n    <tr>\n      <th>10</th>\n      <td>M1P</td>\n      <td>Scarborough</td>\n      <td>Dorset Park,Scarborough Town Centre,Wexford He...</td>\n      <td>43.757410</td>\n      <td>-79.273304</td>\n    </tr>\n    <tr>\n      <th>11</th>\n      <td>M1R</td>\n      <td>Scarborough</td>\n      <td>Maryvale,Wexford</td>\n      <td>43.750072</td>\n      <td>-79.295849</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>M1S</td>\n      <td>Scarborough</td>\n      <td>Agincourt</td>\n      <td>43.794200</td>\n      <td>-79.262029</td>\n    </tr>\n    <tr>\n      <th>13</th>\n      <td>M1T</td>\n      <td>Scarborough</td>\n      <td>Clarks Corners,Sullivan,Tam O'Shanter</td>\n      <td>43.781638</td>\n      <td>-79.304302</td>\n    </tr>\n    <tr>\n      <th>14</th>\n      <td>M1V</td>\n      <td>Scarborough</td>\n      <td>Agincourt North,L'Amoreaux East,Milliken,Steel...</td>\n      <td>43.815252</td>\n      <td>-79.284577</td>\n    </tr>\n  </tbody>\n</table>\n</div>", 
+                        "text/plain": "   Postcode      Borough                                       Neighborhood  \\\n0       M1B  Scarborough                                      Rouge,Malvern   \n1       M1C  Scarborough               Highland Creek,Rouge Hill,Port Union   \n2       M1E  Scarborough                    Guildwood,Morningside,West Hill   \n3       M1G  Scarborough                                             Woburn   \n4       M1H  Scarborough                                          Cedarbrae   \n5       M1J  Scarborough                                Scarborough Village   \n6       M1K  Scarborough          East Birchmount Park,Ionview,Kennedy Park   \n7       M1L  Scarborough                      Clairlea,Golden Mile,Oakridge   \n8       M1M  Scarborough      Cliffcrest,Cliffside,Scarborough Village West   \n9       M1N  Scarborough                         Birch Cliff,Cliffside West   \n10      M1P  Scarborough  Dorset Park,Scarborough Town Centre,Wexford He...   \n11      M1R  Scarborough                                   Maryvale,Wexford   \n12      M1S  Scarborough                                          Agincourt   \n13      M1T  Scarborough              Clarks Corners,Sullivan,Tam O'Shanter   \n14      M1V  Scarborough  Agincourt North,L'Amoreaux East,Milliken,Steel...   \n\n     Latitude  Longitude  \n0   43.806686 -79.194353  \n1   43.784535 -79.160497  \n2   43.763573 -79.188711  \n3   43.770992 -79.216917  \n4   43.773136 -79.239476  \n5   43.744734 -79.239476  \n6   43.727929 -79.262029  \n7   43.711112 -79.284577  \n8   43.716316 -79.239476  \n9   43.692657 -79.264848  \n10  43.757410 -79.273304  \n11  43.750072 -79.295849  \n12  43.794200 -79.262029  \n13  43.781638 -79.304302  \n14  43.815252 -79.284577  "
+                    }, 
+                    "output_type": "execute_result"
+                }
+            ], 
+            "source": "neighborhoods.head(15)"
+        }, 
+        {
+            "execution_count": null, 
+            "cell_type": "code", 
+            "metadata": {}, 
+            "outputs": [], 
+            "source": ""
+        }
+    ], 
+    "metadata": {
+        "kernelspec": {
+            "display_name": "Python 3.5", 
+            "name": "python3", 
+            "language": "python"
+        }, 
+        "language_info": {
+            "mimetype": "text/x-python", 
+            "nbconvert_exporter": "python", 
+            "version": "3.5.5", 
+            "name": "python", 
+            "file_extension": ".py", 
+            "pygments_lexer": "ipython3", 
+            "codemirror_mode": {
+                "version": 3, 
+                "name": "ipython"
+            }
+        }
+    }, 
+    "nbformat": 4
+}
